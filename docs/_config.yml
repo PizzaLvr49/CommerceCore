@@ -1,5 +1,8 @@
 title: CommerceCore Docs
 description: Documentation for the CommerceCore module.
-theme: minima
+remote_theme: pmarsceill/just-the-docs
 markdown: kramdown
 highlighter: rouge
+just_the_docs:
+  # Enable dark mode by default
+  color_scheme: dark
