@@ -1,0 +1,5 @@
+title: CommerceCore Docs
+description: Documentation for the CommerceCore module.
+theme: minima
+markdown: kramdown
+highlighter: rouge
