@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CommerceCore Docs</title>
+    <title>CommerceCore Documentation</title>
     <!-- MUI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mui/material@5.0.0-beta.5/dist/material-ui.min.css">
     <style>
@@ -11,6 +11,7 @@
             background-color: #121212;
             color: #ffffff;
             font-family: 'Roboto', sans-serif;
+            margin: 0;
         }
         header {
             background-color: #333333;
@@ -25,6 +26,23 @@
             padding: 1rem;
             text-align: center;
         }
+        h1, h2, h3, h4, h5, h6 {
+            color: #ffffff;
+        }
+        a {
+            color: #90caf9;
+        }
+        code {
+            background-color: #1e1e1e;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #1e1e1e;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -32,8 +50,302 @@
         <h1>CommerceCore Documentation</h1>
     </header>
     <main>
-        <h2>Welcome</h2>
-        <p>Welcome to the CommerceCore documentation site.</p>
+        <h2>Overview</h2>
+        <p>The <strong>PurchaseHandler</strong> module is a robust solution for managing in-game currencies, purchases, gamepasses, and subscriptions with support for Roblox’s Developer Products. It provides a promise-based approach to handle asynchronous transactions, supports multiple types of purchases, and integrates seamlessly with player data.</p>
+
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#module-structure">Module Structure</a></li>
+            <li><a href="#api-reference">API Reference</a></li>
+            <ul>
+                <li><a href="#currency-management">Currency Management</a></li>
+                <li><a href="#developer-product-purchases">Developer Product Purchases</a></li>
+                <li><a href="#gamepass-purchases">Gamepass Purchases</a></li>
+                <li><a href="#subscription-purchases">Subscription Purchases</a></li>
+                <li><a href="#separate-subscription-functions">Separate Subscription Functions</a></li>
+                <li><a href="#marketplace-service-integration">Marketplace Service Integration</a></li>
+            </ul>
+            <li><a href="#usage-examples">Usage Examples</a></li>
+            <li><a href="#integration-with-player-data">Integration with Player Data</a></li>
+            <li><a href="#signal-handling">Signal Handling</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+            <li><a href="#license">License</a></li>
+        </ul>
+
+        <h2 id="overview">Overview</h2>
+        <p>The <strong>PurchaseHandler</strong> module integrates in-game currency management with Roblox’s purchasing systems. It leverages a promise-based approach to handle asynchronous transactions, supports multiple types of purchases, and integrates seamlessly with player data.</p>
+
+        <h2 id="features">Features</h2>
+        <ul>
+            <li><strong>Currency Management</strong>
+                <ul>
+                    <li>Register currencies with display names, abbreviations, and default values.</li>
+                    <li>Add and deduct in-game currencies.</li>
+                    <li>Format currency displays.</li>
+                </ul>
+            </li>
+            <li><strong>Custom Developer Product Purchases</strong>
+                <ul>
+                    <li>Register custom purchases using Roblox Developer Products.</li>
+                    <li>Promise-based purchase flows with timeouts and error handling.</li>
+                </ul>
+            </li>
+            <li><strong>Gamepass Integration</strong>
+                <ul>
+                    <li>Register and handle Gamepass purchases.</li>
+                    <li>Listen to purchase events and apply in-game benefits.</li>
+                </ul>
+            </li>
+            <li><strong>Subscription Integration</strong>
+                <ul>
+                    <li>Generic subscription functionality using Developer Products.</li>
+                    <li>Separately manage Robux and money subscriptions with separate registration functions.</li>
+                    <li>Prevent multiple simultaneous subscription transactions using active flags.</li>
+                </ul>
+            </li>
+            <li><strong>Signal System</strong>
+                <ul>
+                    <li>Event signals for currency added, currency deducted, purchase completed, purchase failed, and profile loaded.</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2 id="installation">Installation</h2>
+        <ol>
+            <li><strong>ProfileService & Signal Modules</strong>
+                <p>Ensure that you have the required dependencies. Place your <code>ProfileService</code> and <code>Signal</code> modules inside the appropriate directory (e.g., <code>ServerStorage/Modules/</code>).</p>
+            </li>
+            <li><strong>PurchaseHandler Module</strong>
+                <p>Place <code>PurchaseHandler.lua</code> in your modules folder, for example:</p>
+                <pre><code>ServerStorage/Modules/PurchaseHandler.lua</code></pre>
+            </li>
+            <li><strong>Configure Developer Products and Gamepasses</strong>
+                <p>Set the proper Product IDs and Gamepass IDs inside the module registrations (or when calling the registration functions).</p>
+            </li>
+        </ol>
+
+        <h2 id="module-structure">Module Structure</h2>
+        <p>The <strong>PurchaseHandler</strong> module organizes functionality into several sections:</p>
+        <ul>
+            <li><strong>Currency Management</strong>
+                <p>Handles currency registrations, balance queries, and currency adjustments.</p>
+            </li>
+            <li><strong>Purchase Functions</strong>
+                <p>Contains custom purchase registration functions that use Developer Products.</p>
+            </li>
+            <li><strong>Gamepass Purchases</strong>
+                <p>Functions to register and handle gamepass transactions.</p>
+            </li>
+            <li><strong>Subscription Purchases</strong>
+                <p>Contains both a generic subscription registration and separate functions for handling Robux and Money subscriptions.</p>
+            </li>
+            <li><strong>Promise Implementation</strong>
+                <p>Uses an internal promise system to manage asynchronous purchase flows with timeout support.</p>
+            </li>
+            <li><strong>Player Data Management</strong>
+                <p>Initializes and stores player profiles and ensures currency values are reconciled when players join.</p>
+            </li>
+        </ul>
+
+        <h2 id="api-reference">API Reference</h2>
+        <h3 id="currency-management">Currency Management</h3>
+        <ul>
+            <li><strong><code>RegisterCurrency(currencyId, options)</code></strong>
+                <p>Registers a new currency. Options include:</p>
+                <ul>
+                    <li><code>DisplayName</code>: Friendly name.</li>
+                    <li><code>Abbreviation</code>: A short string or symbol.</li>
+                    <li><code>AbbreviationPrefix</code>: Boolean indicating whether the abbreviation is prefixed or suffixed.</li>
+                    <li><code>DefaultValue</code>: Starting balance.</li>
+                    <li><code>PurchaseIDs</code>: A table mapping currency amounts to Developer Product IDs.</li>
+                </ul>
+            </li>
+            <li><strong><code>GetCurrency(player, currencyId)</code></strong>
+                <p>Returns the current balance for a player.</p>
+            </li>
+            <li><strong><code>AddCurrency(player, currencyId, amount)</code></strong>
+                <p>Increases the player’s currency balance.</p>
+            </li>
+            <li><strong><code>DeductCurrency(player, currencyId, amount)</code></strong>
+                <p>Deducts currency if available, fires related signals if successful.</p>
+            </li>
+        </ul>
+
+        <h3 id="developer-product-purchases">Developer Product Purchases</h3>
+        <ul>
+            <li><strong><code>RegisterCustomPurchase(name, purchaseID, customCallback, isPurchasedCallback)</code></strong>
+                <p>Registers a custom purchase using a Developer Product and triggers callbacks upon purchase completion or cancellation.</p>
+            </li>
+            <li><strong><code>RegisterRobuxPurchase(currencyId, amount, productId)</code></strong>
+                <p>Registers a Developer Product purchase for a specific currency.</p>
+            </li>
+        </ul>
+
+        <h3 id="gamepass-purchases">Gamepass Purchases</h3>
+        <ul>
+            <li><strong><code>RegisterGamepassPurchase(name, gamepassId, gamepassCallback, isPurchasedCallback)</code></strong>
+                <p>Registers a gamepass-based purchase. Uses Roblox’s <code>PromptGamePassPurchase</code> and corresponding finished event. Use this function to grant permanent or special gamepass benefits.</p>
+            </li>
+        </ul>
+
+        <h3 id="subscription-purchases">Subscription Purchases</h3>
+        <h4 id="generic-subscription">Generic Subscription</h4>
+        <ul>
+            <li><strong><code>RegisterSubscriptionPurchase(name, productId, subscriptionCallback, isPurchasedCallback)</code></strong>
+                <p>Registers a generic subscription purchase. The callback functions are used to provide benefits upon successful purchase.</p>
+            </li>
+        </ul>
+
+        <h4 id="separate-subscription-functions">Separate Subscription Functions</h4>
+        <ul>
+            <li><strong><code>RegisterRobuxSubscriptionPurchase(name, productId, subscriptionCallback, isPurchasedCallback)</code></strong>
+                <p>Registers a subscription that grants Robux-based benefits. It uses its own active transaction flag (<code>robuxSubscription</code>).</p>
+            </li>
+            <li><strong><code>RegisterMoneySubscriptionPurchase(name, productId, subscriptionCallback, isPurchasedCallback)</code></strong>
+                <p>Registers a subscription that grants in-game premium currency benefits. This function uses a separate active flag (<code>moneySubscription</code>).</p>
+            </li>
+        </ul>
+
+        <h3 id="marketplace-service-integration">Marketplace Service Integration</h3>
+        <ul>
+            <li><strong><code>ProcessReceipt(receiptInfo)</code></strong>
+                <p>Processes completed Developer Product receipts (required for Roblox Developer Products).</p>
+            </li>
+        </ul>
+
+        <h2 id="usage-examples">Usage Examples</h2>
+        <h3>Registering a Currency</h3>
+        <pre><code>PurchaseHandler.RegisterCurrency("Cash", {
+    DisplayName = "Cash",
+    Abbreviation = "$",
+    AbbreviationPrefix = true,
+    DefaultValue = 100,
+    PurchaseIDs = {
+        [100] = 12345678,  -- Developer Product ID for 100 Cash
+        [1000] = 12345679  -- Developer Product ID for 1000 Cash
+    }
+})</code></pre>
+
+        <h3>Registering Custom Purchases (e.g., VIP Purchase)</h3>
+        <pre><code>PurchaseHandler.RegisterCustomPurchase(
+    "VIPPass",
+    12345681,
+    function(userId)
+        local player = Players:GetPlayerByUserId(userId)
+        if not player then return false end
+        PurchaseHandler.AddCurrency(player, "Cash", 1000)
+        PurchaseHandler.AddCurrency(player, "Gems", 100)
+        player:SetAttribute("IsVIP", true)
+        return true
+    end
+)</code></pre>
+
+        <h3>Registering Gamepass and Subscriptions</h3>
+        <pre><code>-- Gamepass purchase for a permanent speed boost
+PurchaseHandler.RegisterGamepassPurchase(
+    "SpeedBoostGamepass",
+    23456789,
+    function(userId)
+        local player = Players:GetPlayerByUserId(userId)
+        if player and player.Character then
+            player.Character.Humanoid.WalkSpeed = 32
+            return true
+        end
+        return false
+    end,
+    function(userId, isPurchased, errMsg)
+        print("Gamepass purchase status for", userId, isPurchased, errMsg)
+    end
+)
+
+-- Robux subscription purchase
+PurchaseHandler.RegisterRobuxSubscriptionPurchase(
+    "MonthlyRobuxSubscription",
+    34567890,
+    function(userId)
+        local player = Players:GetPlayerByUserId(userId)
+        if player then
+            PurchaseHandler.AddCurrency(player, "Cash", 500)
+            return true
+        end
+        return false
+    end,
+    function(userId, isPurchased, errMsg)
+        print("Robux subscription status for", userId, isPurchased, errMsg)
+    end
+)
+
+-- Money subscription purchase
+PurchaseHandler.RegisterMoneySubscriptionPurchase(
+    "MonthlyMoneySubscription",
+    45678901,
+    function(userId)
+        local player = Players:GetPlayerByUserId(userId)
+        if player then
+            PurchaseHandler.AddCurrency(player, "Gems", 10)
+            player:SetAttribute("IsSubscriber", true)
+            return true
+        end
+        return false
+    end,
+    function(userId, isPurchased, errMsg)
+        print("Money subscription status for", userId, isPurchased, errMsg)
+    end
+)</code></pre>
+
+        <h3>Executing Purchases</h3>
+        <p>A typical flow to execute a purchase immediately:</p>
+        <pre><code>local vipPurchase = PurchaseHandler.GetPurchase("VIPPass")
+vipPurchase(player)</code></pre>
+
+        <p>Or prompt a currency purchase:</p>
+        <pre><code>PurchaseHandler.PromptCurrencyPurchase("Cash", 100, player, function(success, errMsg)
+    if success then
+        print("Cash purchase successful!")
+    else
+        warn("Cash purchase failed:", errMsg)
+    end
+end)</code></pre>
+
+        <h2 id="integration-with-player-data">Integration with Player Data</h2>
+        <ul>
+            <li><strong>Player Joining/Leaving:</strong>
+                <p>The module utilizes a <code>ProfileService</code> to load player data on join and reconcile currency balances. When the player joins, their profile is loaded and any missing currency is initialized to its default value. On leaving, the profile data is released, ensuring no duplicate data conflicts.</p>
+            </li>
+        </ul>
+
+        <h2 id="signal-handling">Signal Handling</h2>
+        <p>The module emits various signals which you can connect to for handling different events:</p>
+        <ul>
+            <li><code>CurrencyAdded</code> – Fired when a currency is increased.</li>
+            <li><code>CurrencyDeducted</code> – Fired when a currency is deducted.</li>
+            <li><code>PurchaseCompleted</code> – Fired when a purchase completes successfully.</li>
+            <li><code>PurchaseFailed</code> – Fired when a purchase fails or is cancelled.</li>
+            <li><code>ProfileLoaded</code> – Fired when a player’s profile is successfully loaded.</li>
+        </ul>
+        <p>Example:</p>
+        <pre><code>PurchaseHandler.Signals.CurrencyAdded:Connect(function(player, currencyId, amount)
+    print(player.Name .. " received " .. amount .. " " .. currencyId)
+end)</code></pre>
+
+        <h2 id="troubleshooting">Troubleshooting</h2>
+        <ul>
+            <li><strong>Timeouts:</strong>
+                <p>If a purchase times out, check that the appropriate product or gamepass IDs are set up correctly in your Roblox game and that there is no conflict in active transaction flags.</p>
+            </li>
+            <li><strong>Profile Issues:</strong>
+                <p>If a player's profile is not loading correctly, ensure that ProfileService is properly configured and that the storage key is unique.</p>
+            </li>
+            <li><strong>Multiple Transactions:</strong>
+                <p>The module prevents duplicate simultaneous transactions for the same type by using active flags. If a purchase is not completing, check if a previous transaction is still active.</p>
+            </li>
+        </ul>
+
+        <h2 id="license">License</h2>
+        <p><a href="LICENSE">License</a></p>
     </main>
     <footer>
         <p>&copy; 2025 CommerceCore</p>
