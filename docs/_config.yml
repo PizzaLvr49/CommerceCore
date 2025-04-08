@@ -1,8 +1,11 @@
 title: CommerceCore Docs
 description: Documentation for the CommerceCore module.
-remote_theme: pmarsceill/just-the-docs
+remote_theme: just-the-docs/just-the-docs
+color_scheme: dark
 markdown: kramdown
 highlighter: rouge
+
 just_the_docs:
-  # Enable dark mode by default
-  color_scheme: dark
+  search_enabled: true
+  aux_links:
+    View on GitHub: https://github.com/your-repo/commercecore
